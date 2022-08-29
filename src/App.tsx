@@ -1,7 +1,8 @@
-import './App.css';
+import * as React from 'react';
+import './App.sass';
 
-const App = (): JSX.Element  => (
-    <div>
+const App = (): JSX.Element => (
+  <div>
   </div>
 );
 
