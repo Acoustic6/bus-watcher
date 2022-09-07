@@ -1,8 +1,11 @@
 import * as React from 'react';
-import './App.sass';
+import './App.scss';
+import MapBrowser from './components/MapBrowser';
 
-const App = (): JSX.Element => (
+
+const App = () => (
   <div>
+    <MapBrowser data=''/>
   </div>
 );
 
