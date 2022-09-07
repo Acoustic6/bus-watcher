@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Component } from 'react';
 import * as maptalks from 'maptalks';
-import './MapBrowser.scss';
+import './mapBrowser.scss';
 import 'maptalks/dist/maptalks.css';
 
 interface MapBrowserProps {
@@ -14,6 +14,7 @@ class MapBrowser extends Component<MapBrowserProps> {
   componentDidMount() {
     if (this.map) return;
 
+    // extract to service
     this.map = new maptalks.Map(document.getElementById('map') as HTMLElement, {
       center: [-0.113049,51.498568],
       zoom: 14,
@@ -26,7 +27,7 @@ class MapBrowser extends Component<MapBrowserProps> {
   }
 
   render() {
-    return null;
+    return <div id="map"></div>;
   }
 }
 
