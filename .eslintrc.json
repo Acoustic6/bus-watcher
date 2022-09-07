@@ -20,11 +20,10 @@
     "react-hooks"
   ],
   "rules": {
-    "@typescript-eslint/explicit-function-return-type": "error",
     "max-len": [
       "warn",
       {
-        "code": 80
+        "code": 135
       }
     ],
     "react-hooks/rules-of-hooks": "error",
@@ -39,7 +38,7 @@
       "always-multiline"
     ],
     "quotes": [
-      "error",
+      "warn",
       "single"
     ],
     "indent": [
@@ -48,7 +47,9 @@
     ],
     "no-multi-spaces": [
       "error"
-    ]
+    ],
+    "no-unused-vars": "warn",
+    "@typescript-eslint/no-explicit-any": "off"
   },
   "ignorePatterns": [
     "**/*.css",

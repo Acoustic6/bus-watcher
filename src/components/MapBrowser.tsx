@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Component } from 'react';
 import * as maptalks from 'maptalks';
 import './MapBrowser.scss';
-import 'maptalks/dist/maptalks.css'; // temp
+import 'maptalks/dist/maptalks.css';
 
 interface MapBrowserProps {
   data: any;
