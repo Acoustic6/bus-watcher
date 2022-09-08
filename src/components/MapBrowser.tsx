@@ -16,13 +16,16 @@ class MapBrowser extends Component<MapBrowserProps> {
 
     // extract to service
     this.map = new maptalks.Map(document.getElementById('map') as HTMLElement, {
-      center: [-0.113049,51.498568],
-      zoom: 14,
+      center: [37.6219422357168, 55.75267445772434],
+      zoom: 13.3,
       baseLayer: new maptalks.TileLayer('base', {
         urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
         subdomains: ['a','b','c','d'],
-        attribution: '&copy; <a href="http://osm.org">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/">CARTO</a>',
       }),
+    });
+
+    this.map.on('zooming', function (e: any) {
+      console.log(e);
     });
   }
 
