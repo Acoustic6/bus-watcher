@@ -15,7 +15,6 @@ function initMap(): Map {
     center,
     doubleClickZoom : false,
     zoom: initialZoom,
-    minZoom: actualZoom,
     baseLayer: new TileLayer('base', {
       urlTemplate,
       subdomains,
@@ -28,6 +27,7 @@ function initMap(): Map {
   // set map's max extent to map's extent at initialZoom
   map.setMaxExtent(extent);
   map.setZoom(actualZoom, { animation : false }); // рассказать про zoom и extent
+  map.setMinZoom(actualZoom);
 
   return map;
 }
