@@ -51,7 +51,12 @@
     ],
     "no-unused-vars": "warn",
     "@typescript-eslint/no-explicit-any": "off",
-    "no-debugger": "off"
+    "no-debugger": "off",
+    "object-curly-spacing": [
+      "warn",
+      "always"
+    ],
+    "@typescript-eslint/no-empty-function": "off"
   },
   "ignorePatterns": [
     "**/*.css",
