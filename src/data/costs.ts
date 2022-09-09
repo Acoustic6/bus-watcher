@@ -1,4 +1,4 @@
-interface Cost {
+export interface Cost {
   siteIdFrom: number;
   siteIdTo: number;
   iwait: number;
@@ -9,7 +9,7 @@ interface Cost {
   cost: number;
 }
 
-export const a: Cost[] = [
+export const costs: Cost[] = [
   {siteIdFrom:1658,siteIdTo:2363,iwait:0.83,inveht:8.78,xwait:1.52,xpen:5.0,xnum:1.0,cost:16.13},
   {siteIdFrom:1659,siteIdTo:2363,iwait:0.83,inveht:8.07,xwait:1.52,xpen:5.0,xnum:1.0,cost:15.42},
   {siteIdFrom:2025,siteIdTo:2363,iwait:1.43,inveht:6.66,xwait:1.26,xpen:5.0,xnum:1.0,cost:14.34},
@@ -3789,5 +3789,4 @@ export const a: Cost[] = [
   {siteIdFrom:4355,siteIdTo:1658,iwait:2.73,inveht:11.95,xwait:3.1,xpen:10.0,xnum:2.0,cost:27.77},
   {siteIdFrom:4357,siteIdTo:1658,iwait:2.73,inveht:10.64,xwait:3.1,xpen:10.0,xnum:2.0,cost:26.46},
   {siteIdFrom:6159,siteIdTo:1658,iwait:2.73,inveht:5.78,xwait:3.16,xpen:10.0,xnum:2.0,cost:21.66},
-  
 ];

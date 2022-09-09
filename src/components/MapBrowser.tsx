@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { Component } from 'react';
-import {VectorLayer, Coordinate} from 'maptalks';
+import { VectorLayer } from 'maptalks';
 import './mapBrowser.scss';
 import 'maptalks/dist/maptalks.css';
 import initMap from '../services/mapService';
 import getAllMarkers from '../services/markerService';
+import getCostMapBySiteFrom from '../services/costService';
 
 interface MapBrowserProps {
   data: any;
@@ -24,13 +25,10 @@ class MapBrowser extends Component<MapBrowserProps> {
 
   initMap(): void {
     if (this.map) return;
-
     this.map = initMap();
-    
     const layer = new VectorLayer('vector').addTo(this.map);
 
-
-
+    const costMap = getCostMapBySiteFrom();
 
     getAllMarkers().forEach(marker => {
       marker.addTo(layer);
@@ -40,13 +38,17 @@ class MapBrowser extends Component<MapBrowserProps> {
       //   e.target.updateSymbol({markerFill: color});
       // });
     });
+    
+    // const centerX = 37.61890;
+    // const centerY = 55.73865;
+    // const center = [centerX, centerY];
 
-    // const marker1 = new Marker(
-    //   marker1Coords,
+    // const m = new Marker(
+    //   center,
     //   {
     //     'symbol' : {
     //       'markerType': 'pin',
-    //       'markerFill': 'rgb(135,196,240)',
+    //       'markerFill': 'rgb(204, 20, 20)',
     //       'markerFillOpacity': 1,
     //       'markerLineColor': '#34495e',
     //       'markerLineWidth': 3,
@@ -58,9 +60,8 @@ class MapBrowser extends Component<MapBrowserProps> {
     //       'markerDy': 0,
     //       'markerOpacity' : 1,
     //     },
-    //   },
-    // ).addTo(layer);
-    
+    //   }).addTo(layer);
+      
     // marker1.on('click', function(e) {
     //   const color =`rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`;
     //   e.target.updateSymbol({markerFill: color});
