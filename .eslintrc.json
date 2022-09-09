@@ -28,13 +28,14 @@
     ],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
+    "prefer-const": "warn",
     "react/prop-types": "off",
     "semi": [
       "error",
       "always"
     ],
     "comma-dangle": [
-      "error",
+      "warn",
       "always-multiline"
     ],
     "quotes": [
