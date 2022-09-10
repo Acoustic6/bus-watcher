@@ -1,10 +1,10 @@
-import {Map, Coordinate, TileLayer} from 'maptalks';
+import { Map, Coordinate, TileLayer } from 'maptalks';
 
 function initMap(): Map {
-  const centerX = 37.61890;
-  const centerY = 55.73865;
+  const centerX = 37.608;
+  const centerY = 55.76765;
   const initialZoom = 12.577;
-  const actualZoom = 13.3;
+  const actualZoom = 12.9;
   const urlTemplate = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
   const attribution = '&copy; <a href="http://osm.org">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/">CARTO</a>';
   const subdomains = ['a','b','c','d'];
