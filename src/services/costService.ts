@@ -1,25 +1,21 @@
 import { Cost, costs } from '../data/costs';
 
-const _costBySiteFromIdMap: Map<number, Cost[]> = new Map<number, Cost[]>();
+const _costsBySiteFromIdMap: Map<number, Cost[]> = new Map<number, Cost[]>();
 
 export function getCostsBySiteFromIdMap(): Map<number, Cost[]> {
-  debugger;
-
-
-
-  if (_costBySiteFromIdMap.size === 0) {
+  if (_costsBySiteFromIdMap.size === 0) {
     costs.forEach(cost => {
       const key = cost.siteIdFrom;
-      if (!_costBySiteFromIdMap.has(key)) {
-        _costBySiteFromIdMap.set(key, [cost]);
+      if (!_costsBySiteFromIdMap.has(key)) {
+        _costsBySiteFromIdMap.set(key, [cost]);
       } else {
-        const currentValue = _costBySiteFromIdMap.get(key) as Cost[];
-        _costBySiteFromIdMap.set(key, [cost, ...currentValue]);
+        const currentValue = _costsBySiteFromIdMap.get(key) as Cost[];
+        _costsBySiteFromIdMap.set(key, [cost, ...currentValue]);
       }
     });
   }
   
-  return _costBySiteFromIdMap;
+  return _costsBySiteFromIdMap;
 }
 
 export default (getCostsBySiteFromIdMap);

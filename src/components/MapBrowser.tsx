@@ -8,7 +8,8 @@ import createMarker, { setMarkerColor, updateMarkerInfo } from '../services/mark
 import getCostsBySiteFromIdMap from '../services/costService';
 import sites, { Site } from '../data/sites';
 import { BLACK, DARK_BLUE, DARK_PURPLE, GREEN, LIGHT_BLUE, PURPLE, RED, YELLOW } from './../constants/colors';
-import { Cost, costs } from '../data/costs';
+import { Cost } from '../data/costs';
+import getUnreachableSiteToIdsBySiteFromIdMap from '../services/siteService';
 
 interface MapBrowserProps {
   data: any;
@@ -31,11 +32,11 @@ class MapBrowser extends Component<MapBrowserProps> {
   selectedSite: null | SiteWithStatus = null;
   hoveredOverSite: null | SiteWithStatus = null;
   costsBySiteFromIdMap: Map<number, Cost[]> = new Map<number, Cost[]>();
+  unreachableSiteToIdsBySiteFromIdMap: Map<number, Site[]> = new Map<number, Site[]>();
 
   componentDidMount() {
-    // extract?
     this.costsBySiteFromIdMap = getCostsBySiteFromIdMap();
-
+    this.unreachableSiteToIdsBySiteFromIdMap = getUnreachableSiteToIdsBySiteFromIdMap();
     this.initMap();
   }
 
@@ -112,25 +113,27 @@ class MapBrowser extends Component<MapBrowserProps> {
 
       const marker = e.target as Marker;
       const basicInfo = [site.siteId, site.siteName].join(this.markerInfoSeparator);
-      updateMarkerInfo(marker, basicInfo, layer);
+      let markerInfo = basicInfo;
 
-      if (!site.isSelected && this.selectedSite && this.costsBySiteFromIdMap.has(this.selectedSite.siteId)) {
-        const costs = this.costsBySiteFromIdMap.get(this.selectedSite.siteId) as Cost[];
-        const cost = costs.find(cost => cost.siteIdTo === site.siteId);
-
-        updateMarkerInfo(
-          marker, 
-          [
-            basicInfo,
-            `Агрегированные затраты: ${cost?.cost} мин.`,
-            `Время ожидания: ${cost?.iwait} мин.`,
-            `Время в салоне: ${cost?.inveht} мин.`,
-            `Число пересадок: ${cost?.xnum}`,
-            `Штраф за пересадки: ${cost?.xpen}`,
-          ].join(this.markerInfoSeparator),
-          layer);
+      const cost = this.selectedSite ? this.getCostBetweenSites(this.selectedSite.siteId, site.siteId) : null;
+      if (!site.isSelected && cost) {
+        markerInfo = [markerInfo, this.getAdvancedInfo(cost)].join(this.markerInfoSeparator);
       }
+
+      updateMarkerInfo(
+        marker, 
+        markerInfo,
+        layer,
+      );
     };
+  }
+
+  getAdvancedInfo(cost: Cost | undefined) { // undef
+    return [`Агрегированные затраты: ${cost?.cost} мин.`,
+      `Время ожидания: ${cost?.iwait} мин.`,
+      `Время в салоне: ${cost?.inveht} мин.`,
+      `Число пересадок: ${cost?.xnum}`,
+      `Штраф за пересадки: ${cost?.xpen}`].join(this.markerInfoSeparator);
   }
 
   getOnMouseOutFunc(site: SiteWithStatus, layer: VectorLayer) {
@@ -162,13 +165,25 @@ class MapBrowser extends Component<MapBrowserProps> {
       setMarkerColor(marker, this.selectedMarkerColor);
 
       // extract
-      const costMap = getCostsBySiteFromIdMap(); //need it?
-      const costs = costMap.get(site.siteId);
-      costs?.forEach(cost => {
+      const costsBySiteFromIdMap = getCostsBySiteFromIdMap();
+      if (!costsBySiteFromIdMap.has(site.siteId)) {
+        return;
+      }
+      
+      const costs = costsBySiteFromIdMap.get(site.siteId) as Cost[];
+      costs.forEach(cost => {
         // extract
         const marker = this.getMarkerBySiteId(cost.siteIdTo);
         setMarkerColor(marker, this.getColorByCost(cost.cost));
       });
+
+      if (this.unreachableSiteToIdsBySiteFromIdMap.has(site.siteId)) {
+        const unreachableSites = this.unreachableSiteToIdsBySiteFromIdMap.get(site.siteId) as Site[];
+        unreachableSites.forEach(site => {
+          const marker = this.getMarkerBySiteId(site.siteId);
+          setMarkerColor(marker, BLACK);
+        });
+      }
     };
   }
 
@@ -188,6 +203,15 @@ class MapBrowser extends Component<MapBrowserProps> {
     }
 
     return BLACK;
+  }
+
+  getCostBetweenSites(siteFromId: number, siteToId: number) {
+    if (!this.costsBySiteFromIdMap.has(siteFromId)) {
+      return null;
+    }
+
+    const costs = this.costsBySiteFromIdMap.get(siteFromId) as Cost[];
+    return costs.find(cost => cost.siteIdTo === siteToId) ?? null;
   }
 }
 
