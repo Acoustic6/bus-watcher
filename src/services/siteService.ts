@@ -6,7 +6,7 @@ const _unreachableSitesBySiteFromId: Map<number, Site[]> = new Map<number, Site[
 export function getUnreachableSiteToIdsBySiteFromIdMap(): Map<number, Site[]> {
   sites.forEach(site => {
     if (!Array.from(getCostsBySiteFromIdMap().keys()).find(key => key === site.siteId)) {
-      _unreachableSitesBySiteFromId.set(site.siteId, sites);
+      _unreachableSitesBySiteFromId.set(site.siteId, sites.filter(s => s.siteId !== site.siteId));
     }
   });
 
