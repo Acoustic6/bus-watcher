@@ -21,7 +21,7 @@ function createMarker(site: Site): Marker {
         'markerOpacity' : 1,
         'textFaceName' : 'sans-serif',
         'textName' : '{name}',
-        'textSize' : 20,
+        'textSize' : 23,
         'textDy'   : -50,
         'textDx'   : 30,
         'textFill': '#333333',
@@ -30,7 +30,7 @@ function createMarker(site: Site): Marker {
         'textWrapCharacter': '\n',
         'textHorizontalAlignment': 'right',
         'textHaloFill' : 'white',
-        'textHaloRadius' : 4,
+        'textHaloRadius' : 10,
       },
     },
   );
