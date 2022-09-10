@@ -5,21 +5,23 @@ import './mapBrowser.scss';
 import 'maptalks/dist/maptalks.css';
 import initMap from '../services/mapService';
 import createMarker, { setMarkerColor, updateMarkerInfo } from '../services/markerService';
-import getCostMapBySiteFrom from '../services/costService';
+import getCostsBySiteFromIdMap from '../services/costService';
 import sites, { Site } from '../data/sites';
-import { DARK_BLUE, LIGHT_BLUE, PURPLE } from './../constants/colors';
+import { BLACK, DARK_BLUE, DARK_PURPLE, GREEN, LIGHT_BLUE, PURPLE, RED, YELLOW } from './../constants/colors';
+import { Cost, costs } from '../data/costs';
 
 interface MapBrowserProps {
   data: any;
 }
 
 type SiteWithStatus = Site & {
-  isSelected: boolean; // TODO: keep only selected site?
+  isSelected: boolean;
   isHoveredOver: boolean
 }
 
 // TODO: may be keep only App component?
 class MapBrowser extends Component<MapBrowserProps> {
+  readonly markerInfoSeparator = '\n';
   map: any;
   markersBySiteId: Map<number,Marker> = new Map<number, Marker>(); // need it?
   hoveredOverMarkerColor = PURPLE;
@@ -28,8 +30,12 @@ class MapBrowser extends Component<MapBrowserProps> {
   sites: SiteWithStatus[] = [];
   selectedSite: null | SiteWithStatus = null;
   hoveredOverSite: null | SiteWithStatus = null;
+  costsBySiteFromIdMap: Map<number, Cost[]> = new Map<number, Cost[]>();
 
   componentDidMount() {
+    // extract?
+    this.costsBySiteFromIdMap = getCostsBySiteFromIdMap();
+
     this.initMap();
   }
 
@@ -42,8 +48,6 @@ class MapBrowser extends Component<MapBrowserProps> {
     this.map = initMap();
     
     const layer = new VectorLayer('vector').addTo(this.map);
-
-    const costMap = getCostMapBySiteFrom(); //need it?
 
     sites.map(site => site as SiteWithStatus).forEach(site => {
       site.isSelected = false;
@@ -59,11 +63,14 @@ class MapBrowser extends Component<MapBrowserProps> {
 
       if (this.selectedSite) {
         // extract?
-        this.selectedSite.isSelected = false;
-        const marker = this.getMarkerBySite(this.selectedSite);
-        setMarkerColor(marker, this.initialMarkerColor);
-        updateMarkerInfo(marker, '', layer);
 
+        this.sites.forEach(site => {
+          const marker = this.getMarkerBySiteId(site.siteId);
+          setMarkerColor(marker, this.initialMarkerColor);
+          updateMarkerInfo(marker, '', layer);
+        });
+        // extract
+        this.selectedSite.isSelected = false;
         this.selectedSite = null;
       }
     });
@@ -85,7 +92,7 @@ class MapBrowser extends Component<MapBrowserProps> {
       marker.on('mouseout', e => onMouseOutFunc(e));
       
       // extract?
-      let onClickFunc = this.getOnClickFunc(site);
+      let onClickFunc = this.getOnMarkerClickFunc(site);
       onClickFunc = onClickFunc.bind(this);
       marker.on('click', e => onClickFunc(e));
     });
@@ -104,10 +111,24 @@ class MapBrowser extends Component<MapBrowserProps> {
       this.hoveredOverSite = site;
 
       const marker = e.target as Marker;
-      if (!site.isSelected) {
-        //extract?
-        setMarkerColor(marker, this.hoveredOverMarkerColor);
-        updateMarkerInfo(marker, [site.siteId, site.siteName].join('\n'), layer);
+      const basicInfo = [site.siteId, site.siteName].join(this.markerInfoSeparator);
+      updateMarkerInfo(marker, basicInfo, layer);
+
+      if (!site.isSelected && this.selectedSite && this.costsBySiteFromIdMap.has(this.selectedSite.siteId)) {
+        const costs = this.costsBySiteFromIdMap.get(this.selectedSite.siteId) as Cost[];
+        const cost = costs.find(cost => cost.siteIdTo === site.siteId);
+
+        updateMarkerInfo(
+          marker, 
+          [
+            basicInfo,
+            `Агрегированные затраты: ${cost?.cost} мин.`,
+            `Время ожидания: ${cost?.iwait} мин.`,
+            `Время в салоне: ${cost?.inveht} мин.`,
+            `Число пересадок: ${cost?.xnum}`,
+            `Штраф за пересадки: ${cost?.xpen}`,
+          ].join(this.markerInfoSeparator),
+          layer);
       }
     };
   }
@@ -124,24 +145,49 @@ class MapBrowser extends Component<MapBrowserProps> {
       
       if (!site.isSelected) {
         // extract?
-        setMarkerColor(marker, this.initialMarkerColor);
         updateMarkerInfo(marker, '', layer);
+        if (!this.selectedSite) {
+          setMarkerColor(marker, this.initialMarkerColor);
+        }
       }
     };
   }
 
-  getOnClickFunc(site: SiteWithStatus) {
+  getOnMarkerClickFunc(site: SiteWithStatus) {
     return (e: any) => {
       const marker = e.target as Marker;
       
       site.isSelected = true;
       this.selectedSite = site;
       setMarkerColor(marker, this.selectedMarkerColor);
+
+      // extract
+      const costMap = getCostsBySiteFromIdMap(); //need it?
+      const costs = costMap.get(site.siteId);
+      costs?.forEach(cost => {
+        // extract
+        const marker = this.getMarkerBySiteId(cost.siteIdTo);
+        setMarkerColor(marker, this.getColorByCost(cost.cost));
+      });
     };
   }
 
-  getMarkerBySite(site: SiteWithStatus): Marker {
-    return this.markersBySiteId.get(site.siteId) as Marker;
+  getMarkerBySiteId(siteId: number): Marker {
+    return this.markersBySiteId.get(siteId) as Marker;
+  }
+
+  getColorByCost(cost: number) {
+    if (cost < 5) {
+      return GREEN;
+    } else if (cost < 15) {
+      return YELLOW;
+    } else if (cost <= 30) {
+      return RED;
+    } else if (cost > 30) {
+      return DARK_PURPLE;
+    }
+
+    return BLACK;
   }
 }
 
