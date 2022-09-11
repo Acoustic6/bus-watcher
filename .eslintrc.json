@@ -49,14 +49,15 @@
     "no-multi-spaces": [
       "error"
     ],
-    "no-unused-vars": "warn",
+    "no-unused-vars": "error",
     "@typescript-eslint/no-explicit-any": "off",
     "no-debugger": "off",
     "object-curly-spacing": [
       "warn",
       "always"
     ],
-    "@typescript-eslint/no-empty-function": "off"
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-unused-vars": "error"
   },
   "ignorePatterns": [
     "**/*.css",
