@@ -38,6 +38,7 @@ function createMarker(site: Site): Marker {
 
 export function updateMarkerInfo(marker: Marker, text: string, layer: VectorLayer): void {
   marker.setProperties({ name: text });
+  // fix lib bug: text is not updated without recreation
   marker.remove();
   marker.addTo(layer);
 }

@@ -5,9 +5,9 @@ import './mapBrowser.scss';
 import 'maptalks/dist/maptalks.css';
 import initMap from '../services/mapService';
 import createMarker, { setMarkerColor, updateMarkerInfo } from '../services/markerService';
-import getCostsBySiteFromIdMap from '../services/costService';
+import getCostsBySiteFromIdMap, { getCostBetweenSites } from '../services/costService';
 import { Site } from '../data/sites';
-import { BLACK, DARK_BLUE, DARK_PURPLE, GREEN, LIGHT_BLUE, PURPLE, RED, YELLOW } from './../constants/colors';
+import { BLACK, DARK_BLUE, DARK_PURPLE, GREEN, LIGHT_BLUE, PURPLE, RED, YELLOW } from '../constants/colors';
 import { Cost } from '../data/costs';
 import getSites, { getUnreachableSiteToIdsBySiteFromIdMap } from '../services/siteService';
 
@@ -105,7 +105,7 @@ class MapBrowser extends Component<MapBrowserProps> {
       const marker = e.target as Marker;
       let markerInfo = this.getBasicSiteInfo(site);
 
-      const cost = this.selectedSite ? this.getCostBetweenSites(this.selectedSite.siteId, site.siteId) : null;
+      const cost = this.selectedSite ? getCostBetweenSites(this.selectedSite.siteId, site.siteId) : null;
       if (!this.isSiteSelected(site) && cost) {
         markerInfo = [markerInfo, this.getAdvancedSiteInfo(cost)].join(this.markerInfoSeparator);
       }
@@ -193,15 +193,6 @@ class MapBrowser extends Component<MapBrowserProps> {
       `Время в салоне: ${cost?.inveht} мин.`,
       `Число пересадок: ${cost?.xnum}`,
       `Штраф за пересадки: ${cost?.xpen}`].join(this.markerInfoSeparator);
-  }
-
-  getCostBetweenSites(siteFromId: number, siteToId: number) {
-    if (!this.costsBySiteFromIdMap.has(siteFromId)) {
-      return null;
-    }
-
-    const costs = this.costsBySiteFromIdMap.get(siteFromId) as Cost[];
-    return costs.find(cost => cost.siteIdTo === siteToId) ?? null;
   }
 
   isSiteSelected(site: Site) {
