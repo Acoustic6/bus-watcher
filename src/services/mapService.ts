@@ -1,6 +1,6 @@
 import { Map, Coordinate, TileLayer } from 'maptalks';
 
-function initMap(): Map {
+function createMap(): Map {
   const centerX = 37.608;
   const centerY = 55.76765;
   const initialZoom = 12.577;
@@ -32,4 +32,4 @@ function initMap(): Map {
   return map;
 }
 
-export default(initMap);
+export default(createMap);
