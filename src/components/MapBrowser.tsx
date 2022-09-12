@@ -22,6 +22,7 @@ export type SiteMarker = Site & {
 // TODO: may be keep only App component?
 class MapBrowser extends Component<MapBrowserProps> {
   readonly markerInfoSeparator = '\n';
+
   map: any;
   layer: VectorLayer = new VectorLayer('vector');
   sites: SiteMarker[] = [];
@@ -37,15 +38,22 @@ class MapBrowser extends Component<MapBrowserProps> {
     this.initData();
     this.initMap();
   }
-  //reorder methods
+
   render() {
     return <div id="map"></div>;
   }
 
   initData(): void {
-    this.sites = getSites() as SiteMarker[];
     this.costsBySiteFromIdMap = getCostsBySiteFromIdMap();
     this.unreachableSiteToIdsBySiteFromIdMap = getUnreachableSiteToIdsBySiteFromIdMap();
+    this.createSiteMarkersFromSites();
+  }
+
+  createSiteMarkersFromSites() {
+    this.sites = getSites() as SiteMarker[];
+    this.sites.forEach(site => {
+      this.siteMarkerBySiteId.set(site.siteId, site);
+    });
   }
 
   initMap(): void {
@@ -53,39 +61,17 @@ class MapBrowser extends Component<MapBrowserProps> {
       // double check in debug fix
       return;
     }
+
     this.map = createMap();
     this.layer.addTo(this.map);
     this.setMapMouseEvents();
-    createMarkersBySites(this.sites);
+    this.addMarkersToSites(this.sites);
     this.sites.map(site => site.marker).forEach(marker => marker.addTo(this.layer));
     this.sites.forEach(site => this.setMarkerMouseEvents(site));
-    this.sites.forEach(site => {
-      this.siteMarkerBySiteId.set(site.siteId, site);
-    });
   }
 
-  setMarkerMouseEvents(site: SiteMarker) {
-    this.setOnMouseOverMarkerCallback(site);
-    this.setOnMouseOutMarkerCallback(site);
-    this.setOnMarkerClikCallback(site);
-  }
-
-  setOnMarkerClikCallback(site: SiteMarker) {
-    let onMarkerClickFunc = this.getOnMarkerClickFunc(site);
-    onMarkerClickFunc = onMarkerClickFunc.bind(this);
-    site.marker.on('click', e => onMarkerClickFunc(e));
-  }
-
-  setOnMouseOutMarkerCallback(site: SiteMarker) {
-    let onMouseOutMarkerFunc = this.getOnMouseOutFunc(site);
-    onMouseOutMarkerFunc = onMouseOutMarkerFunc.bind(this);
-    site.marker.on('mouseout', e => onMouseOutMarkerFunc(e));
-  }
-
-  setOnMouseOverMarkerCallback(site: SiteMarker) {
-    let onMouseOverMarkerFunc = this.getOnMouseOverFunc(site);
-    onMouseOverMarkerFunc = onMouseOverMarkerFunc.bind(this);
-    site.marker.on('mouseover', e => onMouseOverMarkerFunc(e));
+  addMarkersToSites(sites: SiteMarker[]) {
+    createMarkersBySites(sites);
   }
 
   setMapMouseEvents(): void {
@@ -100,6 +86,37 @@ class MapBrowser extends Component<MapBrowserProps> {
         this.resetSelectedSite();
       }
     });
+  }
+
+  setAllMarkersToInitState() {
+    this.sites.map(site => site.marker).forEach(marker => {
+      setMarkerColor(marker, this.initialMarkerColor);
+      updateMarkerInfo(marker, '', this.layer);
+    });
+  }
+  
+  setMarkerMouseEvents(site: SiteMarker) {
+    this.setOnMouseOverMarkerCallback(site);
+    this.setOnMouseOutMarkerCallback(site);
+    this.setOnMarkerClikCallback(site);
+  }
+
+  setOnMouseOverMarkerCallback(site: SiteMarker) {
+    let onMouseOverMarkerFunc = this.getOnMouseOverFunc(site);
+    onMouseOverMarkerFunc = onMouseOverMarkerFunc.bind(this);
+    site.marker.on('mouseover', e => onMouseOverMarkerFunc(e));
+  }
+
+  setOnMouseOutMarkerCallback(site: SiteMarker) {
+    let onMouseOutMarkerFunc = this.getOnMouseOutFunc(site);
+    onMouseOutMarkerFunc = onMouseOutMarkerFunc.bind(this);
+    site.marker.on('mouseout', e => onMouseOutMarkerFunc(e));
+  }
+  
+  setOnMarkerClikCallback(site: SiteMarker) {
+    let onMarkerClickFunc = this.getOnMarkerClickFunc(site);
+    onMarkerClickFunc = onMarkerClickFunc.bind(this);
+    site.marker.on('click', e => onMarkerClickFunc(e));
   }
 
   resetSelectedSite() {
@@ -133,6 +150,22 @@ class MapBrowser extends Component<MapBrowserProps> {
     };
   }
 
+  isSiteSelected(site: Site) {
+    return this.selectedSite && this.selectedSite.siteId === site.siteId;
+  }
+
+  isSiteHoveredOver(site: Site) {
+    return this.hoveredOverSite && this.hoveredOverSite.siteId === site.siteId;
+  }
+
+  getAdvancedSiteInfo(cost: Cost) {
+    return [`Агрегированные затраты: ${cost?.cost} мин.`,
+      `Время ожидания: ${cost?.iwait} мин.`,
+      `Время в салоне: ${cost?.inveht} мин.`,
+      `Число пересадок: ${cost?.xnum}`,
+      `Штраф за пересадки: ${cost?.xpen}`].join(this.markerInfoSeparator);
+  }
+
   getOnMouseOutFunc(site: Site) {
     return (e: any) => {
       const marker = e.target as Marker;
@@ -141,7 +174,6 @@ class MapBrowser extends Component<MapBrowserProps> {
       this.hoveredOverSite = null;
       
       if (!this.isSiteSelected(site)) {
-        // extract?
         updateMarkerInfo(marker, '', this.layer);
         if (!this.selectedSite) {
           setMarkerColor(marker, this.initialMarkerColor);
@@ -157,28 +189,24 @@ class MapBrowser extends Component<MapBrowserProps> {
       this.selectedSite = site;
       setMarkerColor(marker, this.selectedMarkerColor);
       updateMarkerInfo(marker, this.getBasicSiteInfo(site), this.layer);
-
-      // extract
-      if (this.costsBySiteFromIdMap.has(site.siteId)) {
-        const costs = this.costsBySiteFromIdMap.get(site.siteId) as Cost[];
-        costs.forEach(cost => {
-          const marker = this.siteMarkerBySiteId.get(cost.siteIdTo)?.marker as Marker;
-          updateMarkerInfo(marker, '', this.layer);
-          setMarkerColor(marker, this.getColorByCost(cost.cost));
-        });
-      }
-
-      if (this.unreachableSiteToIdsBySiteFromIdMap.has(site.siteId)) {
-        const unreachableSites = this.unreachableSiteToIdsBySiteFromIdMap.get(site.siteId) as Site[];
-        unreachableSites.forEach(site => {
-          const marker = this.sites.find(s => s.siteId === site.siteId)?.marker;
-          if (marker) {
-            updateMarkerInfo(marker, '', this.layer);
-            setMarkerColor(marker, BLACK);
-          }
-        });
-      }
+      this.colorizeSitesTo(site);
+      this.colorizeUnreachableSitesTo(site);
     };
+  }
+
+  getBasicSiteInfo(site: Site) {
+    return [site.siteId, site.siteName].join(this.markerInfoSeparator);
+  }
+
+  colorizeSitesTo(siteFrom: SiteMarker) {
+    if (this.costsBySiteFromIdMap.has(siteFrom.siteId)) {
+      const costs = this.costsBySiteFromIdMap.get(siteFrom.siteId) as Cost[];
+      costs.forEach(cost => {
+        const marker = this.siteMarkerBySiteId.get(cost.siteIdTo)?.marker as Marker;
+        updateMarkerInfo(marker, '', this.layer);
+        setMarkerColor(marker, this.getColorByCost(cost.cost));
+      });
+    }
   }
 
   getColorByCost(cost: number) {
@@ -195,31 +223,17 @@ class MapBrowser extends Component<MapBrowserProps> {
     return BLACK;
   }
 
-  getBasicSiteInfo(site: Site) {
-    return [site.siteId, site.siteName].join(this.markerInfoSeparator);
-  }
-
-  getAdvancedSiteInfo(cost: Cost) {
-    return [`Агрегированные затраты: ${cost?.cost} мин.`,
-      `Время ожидания: ${cost?.iwait} мин.`,
-      `Время в салоне: ${cost?.inveht} мин.`,
-      `Число пересадок: ${cost?.xnum}`,
-      `Штраф за пересадки: ${cost?.xpen}`].join(this.markerInfoSeparator);
-  }
-
-  isSiteSelected(site: Site) {
-    return this.selectedSite && this.selectedSite.siteId === site.siteId;
-  }
-
-  isSiteHoveredOver(site: Site) {
-    return this.hoveredOverSite && this.hoveredOverSite.siteId === site.siteId;
-  }
-
-  setAllMarkersToInitState() {
-    this.sites.map(site => site.marker).forEach(marker => {
-      setMarkerColor(marker, this.initialMarkerColor);
-      updateMarkerInfo(marker, '', this.layer);
-    });
+  colorizeUnreachableSitesTo(siteFrom: SiteMarker) {
+    if (this.unreachableSiteToIdsBySiteFromIdMap.has(siteFrom.siteId)) {
+      const unreachableSites = this.unreachableSiteToIdsBySiteFromIdMap.get(siteFrom.siteId) as Site[];
+      unreachableSites.forEach(site => {
+        const marker = this.sites.find(s => s.siteId === site.siteId)?.marker;
+        if (marker) {
+          updateMarkerInfo(marker, '', this.layer);
+          setMarkerColor(marker, BLACK);
+        }
+      });
+    }
   }
 }
 
