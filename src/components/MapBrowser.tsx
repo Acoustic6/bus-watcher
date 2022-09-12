@@ -19,7 +19,6 @@ interface MapBrowserProps {
 class MapBrowser extends Component<MapBrowserProps> {
   readonly markerInfoSeparator = '\n';
   map: any;
-  layer: VectorLayer = new VectorLayer('vector');
   markersBySiteId: Map<number,Marker> = new Map<number, Marker>(); // need it?
   hoveredOverMarkerColor = PURPLE;
   initialMarkerColor = LIGHT_BLUE;
@@ -44,7 +43,7 @@ class MapBrowser extends Component<MapBrowserProps> {
     if (this.map) return;
     this.map = initMap();
     
-    this.layer.addTo(this.map);
+    const layer = new VectorLayer('vector').addTo(this.map);
 
     getSites().map(site => site as Site).forEach(site => {
       this.sites.push(site);
@@ -62,7 +61,7 @@ class MapBrowser extends Component<MapBrowserProps> {
         this.sites.forEach(site => {
           const marker = this.getMarkerBySiteId(site.siteId);
           setMarkerColor(marker, this.initialMarkerColor);
-          updateMarkerInfo(marker, '', this.layer);
+          updateMarkerInfo(marker, '', layer);
         });
         // extract
         this.selectedSite = null;
@@ -72,27 +71,27 @@ class MapBrowser extends Component<MapBrowserProps> {
     // extract
     this.sites.forEach((site: Site) => {
       const marker = createMarker(site);
-      marker.addTo(this.layer);
+      marker.addTo(layer);
       this.markersBySiteId.set(site.siteId, marker);
 
       // extract?
-      let onMouseOverFunc = this.getOnMouseOverFunc(site);
+      let onMouseOverFunc = this.getOnMouseOverFunc(site, layer);
       onMouseOverFunc = onMouseOverFunc.bind(this);
       marker.on('mouseover', e => onMouseOverFunc(e));
       
       // extract?
-      let onMouseOutFunc = this.getOnMouseOutFunc(site);
+      let onMouseOutFunc = this.getOnMouseOutFunc(site, layer);
       onMouseOutFunc = onMouseOutFunc.bind(this);
       marker.on('mouseout', e => onMouseOutFunc(e));
       
       // extract?
-      let onClickFunc = this.getOnMarkerClickFunc(site);
+      let onClickFunc = this.getOnMarkerClickFunc(site, layer);
       onClickFunc = onClickFunc.bind(this);
       marker.on('click', e => onClickFunc(e));
     });
   }
 
-  getOnMouseOverFunc(site: Site) {
+  getOnMouseOverFunc(site: Site, layer: VectorLayer) {
     return (e: any) => {
       
       // fix multiple raise onmouseover event with maptalks markers
@@ -114,12 +113,12 @@ class MapBrowser extends Component<MapBrowserProps> {
       updateMarkerInfo(
         marker, 
         markerInfo,
-        this.layer,
+        layer,
       );
     };
   }
 
-  getOnMouseOutFunc(site: Site) {
+  getOnMouseOutFunc(site: Site, layer: VectorLayer) {
     return (e: any) => {
       const marker = e.target as Marker;
       
@@ -128,7 +127,7 @@ class MapBrowser extends Component<MapBrowserProps> {
       
       if (!this.isSiteSelected(site)) {
         // extract?
-        updateMarkerInfo(marker, '', this.layer);
+        updateMarkerInfo(marker, '', layer);
         if (!this.selectedSite) {
           setMarkerColor(marker, this.initialMarkerColor);
         }
@@ -136,13 +135,13 @@ class MapBrowser extends Component<MapBrowserProps> {
     };
   }
 
-  getOnMarkerClickFunc(site: Site) {
+  getOnMarkerClickFunc(site: Site, layer: VectorLayer) {
     return (e: any) => {
       const marker = e.target as Marker;
 
       this.selectedSite = site;
       setMarkerColor(marker, this.selectedMarkerColor);
-      updateMarkerInfo(marker, this.getBasicSiteInfo(site), this.layer);
+      updateMarkerInfo(marker, this.getBasicSiteInfo(site), layer);
 
       // extract
       if (this.costsBySiteFromIdMap.has(site.siteId)) {
@@ -150,7 +149,7 @@ class MapBrowser extends Component<MapBrowserProps> {
         costs.forEach(cost => {
         // extract
           const marker = this.getMarkerBySiteId(cost.siteIdTo);
-          updateMarkerInfo(marker, '', this.layer);
+          updateMarkerInfo(marker, '', layer);
           setMarkerColor(marker, this.getColorByCost(cost.cost));
         });
       }
@@ -159,7 +158,7 @@ class MapBrowser extends Component<MapBrowserProps> {
         const unreachableSites = this.unreachableSiteToIdsBySiteFromIdMap.get(site.siteId) as Site[];
         unreachableSites.forEach(site => {
           const marker = this.getMarkerBySiteId(site.siteId);
-          updateMarkerInfo(marker, '', this.layer);
+          updateMarkerInfo(marker, '', layer);
           setMarkerColor(marker, BLACK);
         });
       }
