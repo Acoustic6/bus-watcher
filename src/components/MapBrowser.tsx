@@ -195,7 +195,7 @@ class MapBrowser extends Component<MapBrowserProps> {
   }
 
   getBasicSiteInfo(site: Site) {
-    return [site.siteId, site.siteName].join(this.markerInfoSeparator);
+    return [site.siteName,`id: ${site.siteId}` ].join(this.markerInfoSeparator);
   }
 
   colorizeSitesTo(siteFrom: SiteMarker) {

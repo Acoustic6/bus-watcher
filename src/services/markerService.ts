@@ -31,7 +31,7 @@ function createMarker(site: Site): Marker {
         'textWrapCharacter': '\n',
         'textHorizontalAlignment': 'right',
         'textHaloFill' : 'white',
-        'textHaloRadius' : 10,
+        'textHaloRadius' : 7,
       },
     },
   );
