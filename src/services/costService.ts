@@ -18,13 +18,4 @@ export function getCostsBySiteFromIdMap(): Map<number, Cost[]> {
   return _costsBySiteFromIdMap;
 }
 
-export function getCostBetweenSites(siteFromId: number, siteToId: number): Cost | null {
-  if (!_costsBySiteFromIdMap.has(siteFromId)) {
-    return null;
-  }
-
-  const costs = _costsBySiteFromIdMap.get(siteFromId) as Cost[];
-  return costs.find(cost => cost.siteIdTo === siteToId) ?? null;
-}
-
 export default (getCostsBySiteFromIdMap);
