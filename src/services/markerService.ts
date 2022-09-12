@@ -1,4 +1,5 @@
 import { Marker, VectorLayer } from 'maptalks';
+import { SiteMarker } from '../components/mapBrowser';
 import { Site } from '../data/sites';
 import { DARK_BLUE, LIGHT_BLUE } from './../constants/colors';
 
@@ -36,6 +37,12 @@ function createMarker(site: Site): Marker {
   );
 }
 
+export function createMarkersBySites(sites: SiteMarker[]): void {
+  sites.forEach((site: SiteMarker) => {
+    site.marker = createMarker(site);
+  });
+}
+
 export function updateMarkerInfo(marker: Marker, text: string, layer: VectorLayer): void {
   marker.setProperties({ name: text });
   // fix lib bug: text is not updated without recreation
@@ -47,4 +54,4 @@ export function setMarkerColor(marker: Marker, color: string) {
   marker.updateSymbol({ markerFill: color });
 }
 
-export default(createMarker);
+export default(createMarkersBySites);
