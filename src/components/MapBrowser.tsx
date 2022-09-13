@@ -22,7 +22,6 @@ export type SiteMarker = Site & {
   marker: Marker;
 }
 
-// TODO: may be keep only App component?
 class MapBrowser extends Component<MapBrowserProps> {
   readonly markerInfoSeparator = '\n';
   readonly layerName = 'vector';

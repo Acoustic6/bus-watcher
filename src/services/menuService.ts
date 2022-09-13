@@ -78,7 +78,6 @@ export function toggleInstruction(setInstructionZIndex: any) {
       'После создания одного или нескольких новых узлов, их создание можно отменить, нажав кнопку \'Отменить изменение\'.',
       'Для сохранения изменений нажмите на любой свободный участок карты.',
     ];
-    // \'\'
     if (!instructionDiv.innerHTML) {
       instructionDiv.innerHTML = '<div>' + instruction.join('<br>') + '</div>';
       setInstructionZIndex(10);
