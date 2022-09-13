@@ -1,6 +1,8 @@
 # Инструкция по работе с приложением Bus Watcher
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+В качестве основной библиотеки использовалась библиотека  <a href="http://maptalks.org">maptalks</a>.
+Темплейт проекта создан с помощью [Create React App](https://github.com/facebook/create-react-app).
+
 
 ## Работа с остановками
 
@@ -21,7 +23,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 * клик на другой остановке делает её выбранной (т.е. меняет выбранную остановку);
 * клик на любом свободном участке карты отменяет выбор (т.е. возвращает карту в исходное состояние).
 
-Карта поддерживает зуминг. Остановки показыватся на фоне карты <a href="https://carto.com/">CARTO</a>.
+Карта поддерживает зуминг. Остановки показыватся на фоне карты &copy; <a href="http://osm.org">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/">CARTO</a>
 
 Для раскраски остановок используется параметр "cost" (Агрегированные затраты на передвижение (мин.)).
 Выбранная остановка становится начальной, а  все остальные - конечными.
