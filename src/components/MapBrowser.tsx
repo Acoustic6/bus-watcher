@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Component } from 'react';
-import { Marker, VectorLayer } from 'maptalks';
+import { Marker, VectorLayer, LineString } from 'maptalks';
 import './mapBrowser.scss';
 import 'maptalks/dist/maptalks.css';
 import createMap from '../services/mapService';
@@ -10,6 +10,9 @@ import { Site } from '../data/sites';
 import { BLACK, DARK_BLUE, DARK_PURPLE, GREEN, LIGHT_BLUE, RED, YELLOW } from '../constants/colors';
 import { Cost } from '../data/costs';
 import getSites, { getUnreachableSiteToIdsBySiteFromIdMap } from '../services/siteService';
+import { addLinesToLayer, endEditForAllLines, getClickedRoute } from '../services/linesService';
+import createMenu from '../services/menuService';
+import createDrawTool from '../services/drawService';
 
 interface MapBrowserProps {
   data: any;
@@ -22,9 +25,10 @@ export type SiteMarker = Site & {
 // TODO: may be keep only App component?
 class MapBrowser extends Component<MapBrowserProps> {
   readonly markerInfoSeparator = '\n';
+  readonly layerName = 'vector';
 
   map: any;
-  layer: VectorLayer = new VectorLayer('vector');
+  layer: VectorLayer;
   sites: SiteMarker[] = [];
   initialMarkerColor = LIGHT_BLUE;
   selectedMarkerColor = DARK_BLUE;
@@ -63,11 +67,14 @@ class MapBrowser extends Component<MapBrowserProps> {
     }
 
     this.map = createMap();
-    this.layer.addTo(this.map);
+    this.layer = new VectorLayer(this.layerName).addTo(this.map);
     this.setMapMouseEvents();
     this.addMarkersToSites(this.sites);
     this.sites.map(site => site.marker).forEach(marker => marker.addTo(this.layer));
     this.sites.forEach(site => this.setMarkerMouseEvents(site));
+    addLinesToLayer(this.layer);
+    const drawTool = createDrawTool(this.map, this.layer);
+    createMenu(this.layer, this.map, drawTool);
   }
 
   addMarkersToSites(sites: SiteMarker[]) {
@@ -75,10 +82,18 @@ class MapBrowser extends Component<MapBrowserProps> {
   }
 
   setMapMouseEvents(): void {
-    this.map.on('click', () => {
-      if (this.hoveredOverSite) {
+    this.map.on('click', (e: any) => {
+      const clickedRoute = getClickedRoute(e.coordinate);
+      if (this.hoveredOverSite && !clickedRoute) {
         // fix problem: click on marker === click on map
         return;
+      }
+
+      if (clickedRoute) {
+        const line = clickedRoute as LineString;
+        line.startEdit();
+      } else {
+        endEditForAllLines();
       }
 
       if (this.selectedSite) {
