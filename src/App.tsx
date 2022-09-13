@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './App.scss';
-import MapBrowser from './components/mapBrowser';
+import MapBrowser from './components/MapBrowser';
 import NavBar from './components/navBar';
 import { Route, Switch } from 'react-router-dom';
 

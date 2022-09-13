@@ -1,5 +1,5 @@
 import { Marker, VectorLayer } from 'maptalks';
-import { SiteMarker } from '../components/mapBrowser';
+import { SiteMarker } from '../components/MapBrowser';
 import { Site } from '../data/sites';
 import { DARK_BLUE, LIGHT_BLUE } from './../constants/colors';
 

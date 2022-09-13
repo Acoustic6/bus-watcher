@@ -10,7 +10,7 @@ import { Site } from '../data/sites';
 import { BLACK, DARK_BLUE, DARK_PURPLE, GREEN, LIGHT_BLUE, RED, YELLOW } from '../constants/colors';
 import { Cost } from '../data/costs';
 import getSites, { getUnreachableSiteToIdsBySiteFromIdMap } from '../services/siteService';
-import { addLinesToLayer, endEditForAllLines, getClickedRoute } from '../services/linesService';
+import { addLinesToLayer, endEditForAllLines, getClickedRoute, hideRoutes } from '../services/linesService';
 import createMenu from '../services/menuService';
 import createDrawTool from '../services/drawService';
 
@@ -67,21 +67,22 @@ class MapBrowser extends Component<MapBrowserProps> {
     }
 
     this.map = createMap();
-    this.layer = new VectorLayer(this.layerName).addTo(this.map);
-    this.setMapMouseEvents();
+    this.layer = this.createLayer();
+    this.setUpMap();
     this.addMarkersToSites(this.sites);
-    this.sites.map(site => site.marker).forEach(marker => marker.addTo(this.layer));
-    this.sites.forEach(site => this.setMarkerMouseEvents(site));
-    addLinesToLayer(this.layer);
+    this.addMarkersToMap();
+    this.addRoutesToMap();
     const drawTool = createDrawTool(this.map, this.layer);
     createMenu(this.layer, this.map, drawTool);
+    hideRoutes();
+
+  }
+  
+  createLayer(): VectorLayer {
+    return new VectorLayer(this.layerName).addTo(this.map);
   }
 
-  addMarkersToSites(sites: SiteMarker[]) {
-    createMarkersBySites(sites);
-  }
-
-  setMapMouseEvents(): void {
+  setUpMap(): void {
     this.map.on('click', (e: any) => {
       const clickedRoute = getClickedRoute(e.coordinate);
       if (this.hoveredOverSite && !clickedRoute) {
@@ -101,6 +102,19 @@ class MapBrowser extends Component<MapBrowserProps> {
         this.resetSelectedSite();
       }
     });
+  }
+
+  addMarkersToSites(sites: SiteMarker[]) {
+    createMarkersBySites(sites);
+  }
+
+  addRoutesToMap() {
+    addLinesToLayer(this.layer);
+  }
+
+  addMarkersToMap() {
+    this.sites.map(site => site.marker).forEach(marker => marker.addTo(this.layer));
+    this.sites.forEach(site => this.setMarkerMouseEvents(site));
   }
 
   setAllMarkersToInitState() {
