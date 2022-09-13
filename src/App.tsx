@@ -1,20 +1,19 @@
-import * as React from 'react';
+import React,{ useState } from 'react';
 import './App.scss';
 import MapBrowser from './components/MapBrowser';
 import NavBar from './components/navBar';
-import { Route, Switch } from 'react-router-dom';
 
+const App = () => {
+  const [zIndex, setzIndex] = useState(0);
 
-const App = () => (
-  <React.Fragment>
+  return <React.Fragment>
     <NavBar />
     <main className="container">
-      <Switch>
-        <Route path='/' render={props => <MapBrowser data='' {...props}/>} />
-      </Switch>
+      <div id="status" style={{ zIndex }}></div>
+      <MapBrowser setZIndex={setzIndex} />
     </main>
-  </React.Fragment>
+  </React.Fragment>;
 
-);
+};
 
 export default App;

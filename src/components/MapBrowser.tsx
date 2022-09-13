@@ -10,12 +10,12 @@ import { Site } from '../data/sites';
 import { BLACK, DARK_BLUE, DARK_PURPLE, GREEN, LIGHT_BLUE, RED, YELLOW } from '../constants/colors';
 import { Cost } from '../data/costs';
 import getSites, { getUnreachableSiteToIdsBySiteFromIdMap } from '../services/siteService';
-import { addLinesToLayer, endEditForAllLines, getClickedRoute, hideRoutes } from '../services/linesService';
-import createMenu from '../services/menuService';
+import { addLinesToLayer, endEditForAllLines, getClickedRoute, hideRoutes, startEdit } from '../services/linesService';
 import createDrawTool from '../services/drawService';
+import createMenu from '../services/menuService';
 
 interface MapBrowserProps {
-  data: any;
+  setZIndex: any;
 }
 
 export type SiteMarker = Site & {
@@ -44,7 +44,9 @@ class MapBrowser extends Component<MapBrowserProps> {
   }
 
   render() {
-    return <div id="map"></div>;
+    return <React.Fragment>
+      <div id="map"></div>
+    </React.Fragment>;
   }
 
   initData(): void {
@@ -73,9 +75,8 @@ class MapBrowser extends Component<MapBrowserProps> {
     this.addMarkersToMap();
     this.addRoutesToMap();
     const drawTool = createDrawTool(this.map, this.layer);
-    createMenu(this.layer, this.map, drawTool);
+    createMenu(this.layer, this.map, drawTool, this.props.setZIndex);
     hideRoutes();
-
   }
   
   createLayer(): VectorLayer {
@@ -89,10 +90,10 @@ class MapBrowser extends Component<MapBrowserProps> {
         // fix problem: click on marker === click on map
         return;
       }
-
+      
       if (clickedRoute) {
         const line = clickedRoute as LineString;
-        line.startEdit();
+        startEdit(line);
       } else {
         endEditForAllLines();
       }
@@ -101,6 +102,8 @@ class MapBrowser extends Component<MapBrowserProps> {
         this.setAllMarkersToInitState();
         this.resetSelectedSite();
       }
+
+      this.props.setZIndex(-1);
     });
   }
 

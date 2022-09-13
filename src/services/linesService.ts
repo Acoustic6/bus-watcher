@@ -48,8 +48,20 @@ const _lines: LineString[] = [
   }),
 ];
 
+function getEdittingLine() {
+  return getAddedLines().find(line => line.isEditing());
+}
+
+function getAddedLines() {
+  return _lines.filter(line => line.getLayer());
+}
+
+function getNotAddedLines() {
+  return _lines.filter(line => !line.getLayer());
+}
+
 export function getClickedRoute(point: Coordinate) {
-  return _lines.find(line => line.containsPoint(point));
+  return getAddedLines().find(line => line.containsPoint(point));
 }
 
 export function getLines(): LineString[] {
@@ -57,20 +69,20 @@ export function getLines(): LineString[] {
 }
 
 export function endEditForAllLines(): void {
-  _lines.forEach(line => line.endEdit());
+  getAddedLines().forEach(line => line.endEdit());
 }
 
 export function addLinesToLayer(layer: VectorLayer) {
-  _lines.forEach(line => line.addTo(layer));
+  getNotAddedLines().forEach(line => line.addTo(layer));
 }
 
 export function showRoutes(layer: VectorLayer) {
-  _lines.forEach(line => line.addTo(layer));
+  addLinesToLayer(layer);
 }
 
 export function hideRoutes() {
   getEdittingLine()?.endEdit();
-  _lines.forEach(line => line.remove());
+  getAddedLines().forEach(line => line.remove());
 }
 
 export function addRoute(drawTool: DrawTool) {
@@ -81,8 +93,9 @@ export function undoEdit() {
   getEdittingLine()?.undoEdit();
 }
 
-function getEdittingLine() {
-  return _lines.find(line => line.isEditing());
+export function startEdit(line: LineString) {
+  getAddedLines().forEach(line => line.endEdit());
+  line.startEdit();
 }
 
 export default(getLines);
