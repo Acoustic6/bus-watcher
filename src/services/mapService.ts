@@ -26,7 +26,7 @@ function createMap(): Map {
 
   // set map's max extent to map's extent at initialZoom
   map.setMaxExtent(extent);
-  map.setZoom(actualZoom, { animation : false }); // рассказать про zoom и extent
+  map.setZoom(actualZoom, { animation : false });
   map.setMinZoom(actualZoom);
 
   return map;

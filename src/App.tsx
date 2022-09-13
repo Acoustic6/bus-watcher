@@ -1,6 +1,6 @@
 import React,{ useState } from 'react';
 import './App.scss';
-import MapBrowser from './components/MapBrowser';
+import MapBrowser from './components/mapBrowser';
 import NavBar from './components/navBar';
 
 const App = () => {

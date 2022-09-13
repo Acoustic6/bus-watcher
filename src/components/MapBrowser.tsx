@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Component } from 'react';
 import { Marker, VectorLayer, LineString } from 'maptalks';
-import './mapBrowser.scss';
 import 'maptalks/dist/maptalks.css';
 import createMap from '../services/mapService';
 import createMarkersBySites, { setMarkerColor, updateMarkerInfo } from '../services/markerService';
