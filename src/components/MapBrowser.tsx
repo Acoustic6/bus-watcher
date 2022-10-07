@@ -5,9 +5,9 @@ import 'maptalks/dist/maptalks.css';
 import createMap from '../services/mapService';
 import createMarkersBySites, { setMarkerColor, updateMarkerInfo } from '../services/markerService';
 import getCostsBySiteFromIdMap, { getCostBetweenSites } from '../services/costService';
-import { Site } from '../data/sites';
+import { Site } from '../data/sitesData';
 import { BLACK, DARK_BLUE, DARK_PURPLE, GREEN, LIGHT_BLUE, RED, YELLOW } from '../common/constants/colors';
-import { Cost } from '../data/costs';
+import { Cost } from '../data/costsData';
 import getSites, { getUnreachableSiteToIdsBySiteFromIdMap } from '../services/siteService';
 import { addLinesToLayer, endEditForAllLines, getClickedRoute, hideRoutes, startEdit } from '../services/linesService';
 import createDrawTool from '../services/drawService';
@@ -17,6 +17,7 @@ import { MapState } from '../store/reducers/appReducer';
 import { AnyAction } from 'redux';
 import { connect } from 'react-redux';
 import { fetchCosts } from '../store/costs/costs';
+import { fetchSites } from '../store/sites/sites';
 
 interface MapBrowserProps {
     setZIndex: any
@@ -25,7 +26,7 @@ interface MapBrowserProps {
 interface DispatchProps {
     actions: {
         handleFetchCosts: () => void
-        // handleFetchSites: () => void
+        handleFetchSites: () => void
     }
 }
 
@@ -33,7 +34,18 @@ export type SiteMarker = Site & {
     marker: Marker
 }
 
-class MapBrowser extends Component<MapBrowserProps> {
+interface OwnProps {
+    children?: React.ReactChild
+}
+
+interface DispatchProps {
+    actions: {
+        handleFetchCosts: () => void
+        handleFetchSites: () => void
+    }
+}
+
+class MapBrowser extends Component<OwnProps & DispatchProps & MapBrowserProps> {
     readonly markerInfoSeparator = '\n';
     readonly layerName = 'vector';
 
@@ -49,7 +61,10 @@ class MapBrowser extends Component<MapBrowserProps> {
     siteMarkerBySiteId: Map<number, SiteMarker> = new Map<number, SiteMarker>();
 
     componentDidMount() {
-        this.initData();
+        this.props.actions.handleFetchCosts();
+        this.props.actions.handleFetchSites();
+
+        this.initData(); // remove?
         this.initMap();
     }
 
@@ -288,7 +303,7 @@ function mapDispatchToProps(dispatch: ThunkDispatch<MapState, void, AnyAction>):
     return {
         actions: {
             handleFetchCosts: () => dispatch(fetchCosts()),
-            // handleFetchSites: () => dispatch(fetchCosts()),
+            handleFetchSites: () => dispatch(fetchSites()),
         },
     };
 }

@@ -1,5 +1,5 @@
 import getCostsBySiteFromIdMap from './costService';
-import { Site, sites } from './../data/sites';
+import { Site, sites } from '../data/sitesData';
 
 const _unreachableSitesBySiteFromId: Map<number, Site[]> = new Map<number, Site[]>();
 

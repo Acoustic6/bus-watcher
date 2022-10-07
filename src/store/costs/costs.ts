@@ -1,4 +1,4 @@
-import { Cost } from '../../data/costs';
+import { Cost } from '../../data/costsData';
 import Axios from 'axios';
 import { Dispatch } from 'redux';
 import HttpResponse from '../../common/interfaces/httpResponse';
@@ -47,7 +47,7 @@ export const getCostsError = (error: any) => ({
     error,
 })
 
-export type ApplicationActionTypes =
+export type CostsActionTypes =
 GetCostsStartAction
 | GetCostsSuccessAction
 | GetCostsErrorAction
@@ -56,7 +56,6 @@ export const fetchCosts = () => async (dispatch: Dispatch): Promise<void> => {
     dispatch(getCostsStart());
     try {
         const url = (process.env.REACT_APP_BACK_URL || 'http://localhost:9001') + '/' + (process.env.REACT_APP_FETCH_COSTS_URL || '');
-        console.log(url);
         const response = await Axios.get(url) as HttpResponse;
         dispatch(getCostsSuccess(response.payload));
     } catch (error) {
@@ -64,7 +63,7 @@ export const fetchCosts = () => async (dispatch: Dispatch): Promise<void> => {
     }
 }
 
-const costsReducer = (state = initialState, action: ApplicationActionTypes) => {
+const costsReducer = (state = initialState, action: CostsActionTypes) => {
     switch (action.type) {
         case GET_COSTS_START:
             return {

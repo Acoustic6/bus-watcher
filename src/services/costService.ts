@@ -1,4 +1,4 @@
-import { Cost, costs } from '../data/costs';
+import { Cost, costs } from '../data/costsData';
 
 const _costsBySiteFromIdMap: Map<number, Cost[]> = new Map<number, Cost[]>();
 
