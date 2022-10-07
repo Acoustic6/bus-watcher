@@ -6,15 +6,27 @@ import createMap from '../services/mapService';
 import createMarkersBySites, { setMarkerColor, updateMarkerInfo } from '../services/markerService';
 import getCostsBySiteFromIdMap, { getCostBetweenSites } from '../services/costService';
 import { Site } from '../data/sites';
-import { BLACK, DARK_BLUE, DARK_PURPLE, GREEN, LIGHT_BLUE, RED, YELLOW } from '../constants/colors';
+import { BLACK, DARK_BLUE, DARK_PURPLE, GREEN, LIGHT_BLUE, RED, YELLOW } from '../common/constants/colors';
 import { Cost } from '../data/costs';
 import getSites, { getUnreachableSiteToIdsBySiteFromIdMap } from '../services/siteService';
 import { addLinesToLayer, endEditForAllLines, getClickedRoute, hideRoutes, startEdit } from '../services/linesService';
 import createDrawTool from '../services/drawService';
 import createMenu from '../services/menuService';
+import { ThunkDispatch } from 'redux-thunk';
+import { MapState } from '../store/reducers/appReducer';
+import { AnyAction } from 'redux';
+import { connect } from 'react-redux';
+import { fetchCosts } from '../store/costs/costs';
 
 interface MapBrowserProps {
     setZIndex: any
+}
+
+interface DispatchProps {
+    actions: {
+        handleFetchCosts: () => void
+        // handleFetchSites: () => void
+    }
 }
 
 export type SiteMarker = Site & {
@@ -272,4 +284,15 @@ class MapBrowser extends Component<MapBrowserProps> {
     }
 }
 
-export default MapBrowser;
+function mapDispatchToProps(dispatch: ThunkDispatch<MapState, void, AnyAction>): DispatchProps {
+    return {
+        actions: {
+            handleFetchCosts: () => dispatch(fetchCosts()),
+            // handleFetchSites: () => dispatch(fetchCosts()),
+        },
+    };
+}
+
+export default connect(null, mapDispatchToProps)(MapBrowser);
+
+
