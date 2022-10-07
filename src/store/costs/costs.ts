@@ -55,7 +55,7 @@ GetCostsStartAction
 export const fetchCosts = () => async (dispatch: Dispatch): Promise<void> => {
     dispatch(getCostsStart());
     try {
-        const url = (process.env.REACT_APP_BACK_URL || 'http://localhost:9001') + '/' + (process.env.REACT_APP_FETCH_COSTS_URL || '');
+        const url = (process.env.REACT_APP_BACK_URL || 'http://localhost:9001') + (process.env.REACT_APP_FETCH_COSTS_URL || '');
         const response = await Axios.get(url) as HttpResponse;
         dispatch(getCostsSuccess(response.payload));
     } catch (error) {
