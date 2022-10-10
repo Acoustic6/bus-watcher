@@ -57,13 +57,13 @@ export const fetchCosts = () => async (dispatch: Dispatch): Promise<void> => {
     try {
         const url = (process.env.REACT_APP_BACK_URL || 'http://localhost:9001') + (process.env.REACT_APP_FETCH_COSTS_URL || '');
         const response = await Axios.get(url) as HttpResponse;
-        dispatch(getCostsSuccess(response.payload));
+        dispatch(getCostsSuccess(response.data));
     } catch (error) {
         dispatch(getCostsError(error));
     }
 }
 
-const costsReducer = (state = initialState, action: CostsActionTypes) => {
+const CostsReducer = (state = initialState, action: CostsActionTypes) => {
     switch (action.type) {
         case GET_COSTS_START:
             return {
@@ -84,7 +84,9 @@ const costsReducer = (state = initialState, action: CostsActionTypes) => {
                 costs: [],
                 error: action.error,
             }
+        default:
+            return state;
     }
 }
 
-export default costsReducer;
+export default CostsReducer;

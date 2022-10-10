@@ -57,13 +57,13 @@ export const fetchSites = () => async (dispatch: Dispatch): Promise<void> => {
     try {
         const url = (process.env.REACT_APP_BACK_URL || 'http://localhost:9001') + (process.env.REACT_APP_FETCH_SITES_URL || '');
         const response = await Axios.get(url) as HttpResponse;
-        dispatch(getSitesSuccess(response.payload));
+        dispatch(getSitesSuccess(response.data));
     } catch (error) {
         dispatch(getSitesError(error));
     }
 }
 
-const sitesReducer = (state = initialState, action: SitesActionTypes) => {
+const SitesReducer = (state = initialState, action: SitesActionTypes) => {
     switch (action.type) {
         case GET_SITES_START:
             return {
@@ -84,7 +84,9 @@ const sitesReducer = (state = initialState, action: SitesActionTypes) => {
                 sites: [],
                 error: action.error,
             }
+        default:
+            return state;
     }
 }
 
-export default sitesReducer;
+export default SitesReducer;

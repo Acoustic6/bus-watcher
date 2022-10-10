@@ -1,4 +1,4 @@
 export default interface HttpResponse {
-    payload: any
+    data: any
     error?: string
 }

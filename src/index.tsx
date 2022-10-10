@@ -5,18 +5,24 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 
 import 'bootstrap/dist/css/bootstrap.css';
-import { applyMiddleware, createStore, compose } from 'redux';
-import map from './store/reducers/appReducer';
+import { applyMiddleware, createStore, compose, combineReducers } from 'redux';
+import MapReducer from './store/reducers/mapReducer';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
+import CostsReducer from './store/costs/costs';
+import SitesReducer from './store/sites/sites';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement,
 );
 
+const busWatcherReducer = combineReducers({
+    map: MapReducer,
+    costs: CostsReducer,
+    sites: SitesReducer,
+})
 const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-
-const store = createStore(map, composeEnhancers(applyMiddleware(thunk)));
+const store = createStore(busWatcherReducer, composeEnhancers(applyMiddleware(thunk)));
 
 root.render(
     <BrowserRouter>

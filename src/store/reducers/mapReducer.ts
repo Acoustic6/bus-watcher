@@ -7,8 +7,8 @@ const initState: MapState = {
 }
 
 // eslint-disable-next-line arrow-body-style
-const map = (state = initState) => {
+const MapReducer = (state = initState) => {
     return state;
 }
 
-export default map;
+export default MapReducer;
