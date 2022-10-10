@@ -13,12 +13,11 @@ import { addLinesToLayer, endEditForAllLines, getClickedRoute, hideRoutes, start
 import createDrawTool from '../services/drawService';
 import createMenu from '../services/menuService';
 import { ThunkDispatch } from 'redux-thunk';
-import { MapState } from '../store/reducers/mapReducer';
+import { MapState } from '../store/map';
 import { AnyAction } from 'redux';
 import { connect } from 'react-redux';
-import { fetchCosts } from '../store/costs/costs';
-import { fetchSites } from '../store/sites/sites';
-
+import { fetchCosts } from '../store/costs';
+import { fetchSites } from '../store/sites';
 interface MapBrowserProps {
     setZIndex: any
 }

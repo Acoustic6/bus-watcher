@@ -6,11 +6,11 @@ import { BrowserRouter } from 'react-router-dom';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import { applyMiddleware, createStore, compose, combineReducers } from 'redux';
-import MapReducer from './store/reducers/mapReducer';
+import MapReducer from './store/map';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
-import CostsReducer from './store/costs/costs';
-import SitesReducer from './store/sites/sites';
+import CostsReducer from './store/costs';
+import SitesReducer from './store/sites';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement,
