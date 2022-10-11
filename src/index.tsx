@@ -6,7 +6,6 @@ import { BrowserRouter } from 'react-router-dom';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import { applyMiddleware, createStore, compose, combineReducers } from 'redux';
-import MapReducer from './store/map';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import CostsReducer from './store/costs';
@@ -17,7 +16,6 @@ const root = ReactDOM.createRoot(
 );
 
 const busWatcherReducer = combineReducers({
-    map: MapReducer,
     costs: CostsReducer,
     sites: SitesReducer,
 })
