@@ -1,15 +1,6 @@
-export interface Cost {
-    siteIdFrom: number
-    siteIdTo: number
-    iwait: number
-    inveht: number
-    xwait: number
-    xpen: number
-    xnum: number
-    cost: number
-}
+import { Cost } from '../services/costService';
 
-export const costs: Cost[] = [
+export const costsData: Cost[] = [
     { siteIdFrom: 1658,siteIdTo: 2363,iwait: 0.83,inveht: 8.78,xwait: 1.52,xpen: 5.0,xnum: 1.0,cost: 16.13 },
     { siteIdFrom: 1659,siteIdTo: 2363,iwait: 0.83,inveht: 8.07,xwait: 1.52,xpen: 5.0,xnum: 1.0,cost: 15.42 },
     { siteIdFrom: 2025,siteIdTo: 2363,iwait: 1.43,inveht: 6.66,xwait: 1.26,xpen: 5.0,xnum: 1.0,cost: 14.34 },

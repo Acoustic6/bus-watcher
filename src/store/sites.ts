@@ -1,7 +1,7 @@
 import Axios from 'axios';
 import { Dispatch } from 'redux';
 import HttpResponse from '../common/interfaces/httpResponse';
-import { Site } from '../data/sitesData';
+import { Site } from '../services/siteService';
 
 export type SiteState = Readonly<{
     sites: Site[]

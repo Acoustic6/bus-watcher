@@ -4,23 +4,11 @@ import { Marker, VectorLayer } from 'maptalks';
 import 'maptalks/dist/maptalks.css';
 import createMap from '../services/mapService';
 import createMarkersBySites, { setMarkerColor, updateMarkerInfo } from '../services/markerService';
-import getCostsBySiteFromIdMap, { getCostBetweenSites } from '../services/costService';
-import { Site } from '../data/sitesData';
+import getCostsBySiteFromIdMap, { Cost, getCostBetweenSites } from '../services/costService';
 import { BLACK, DARK_BLUE, DARK_PURPLE, GREEN, LIGHT_BLUE, RED, YELLOW } from '../common/constants/colors';
-import { Cost } from '../data/costsData';
-import getSites, { getUnreachableSiteToIdsBySiteFromIdMap } from '../services/siteService';
-import { ThunkDispatch } from 'redux-thunk';
-import { AnyAction } from 'redux';
+import getSites, { getUnreachableSiteToIdsBySiteFromIdMap, Site } from '../services/siteService';
 import { connect } from 'react-redux';
-import { fetchCosts } from '../store/costs';
-import { fetchSites } from '../store/sites';
-
-interface DispatchProps {
-    actions: {
-        handleFetchCosts: () => void
-        handleFetchSites: () => void
-    }
-}
+import { BusWatcherState } from '..';
 
 export type SiteMarker = Site & {
     marker: Marker
@@ -30,14 +18,19 @@ interface OwnProps {
     children?: React.ReactChild
 }
 
-interface DispatchProps {
+export interface DispatchProps {
     actions: {
         handleFetchCosts: () => void
         handleFetchSites: () => void
     }
 }
 
-class MapBrowser extends Component<OwnProps & DispatchProps> {
+export interface StateProps {
+    costs: Cost[]
+    sites: Site[]
+}
+
+class MapBrowser extends Component<OwnProps & StateProps & DispatchProps> {
     readonly markerInfoSeparator = '\n';
     readonly layerName = 'vector';
 
@@ -52,12 +45,11 @@ class MapBrowser extends Component<OwnProps & DispatchProps> {
     unreachableSiteToIdsBySiteFromIdMap: Map<number, Site[]> = new Map<number, Site[]>();
     siteMarkerBySiteId: Map<number, SiteMarker> = new Map<number, SiteMarker>();
 
-    componentDidMount() {
-        this.props.actions.handleFetchCosts();
-        this.props.actions.handleFetchSites();
-
-        this.initData(); // remove?
-        this.initMap();
+    componentDidUpdate() {
+        if (this.props.sites?.length > 0 && this.props.costs?.length > 0) {
+            this.initData();
+            this.initMap();
+        }
     }
 
     render() {
@@ -67,13 +59,13 @@ class MapBrowser extends Component<OwnProps & DispatchProps> {
     }
 
     initData(): void {
-        this.costsBySiteFromIdMap = getCostsBySiteFromIdMap();
-        this.unreachableSiteToIdsBySiteFromIdMap = getUnreachableSiteToIdsBySiteFromIdMap();
+        this.costsBySiteFromIdMap = getCostsBySiteFromIdMap(this.props.costs);
+        this.unreachableSiteToIdsBySiteFromIdMap = getUnreachableSiteToIdsBySiteFromIdMap(this.props.costs, this.props.sites);
         this.createSiteMarkersFromSites();
     }
 
     createSiteMarkersFromSites() {
-        this.sites = getSites() as SiteMarker[];
+        this.sites = getSites(this.props.sites) as SiteMarker[];
         this.sites.forEach(site => {
             this.siteMarkerBySiteId.set(site.siteId, site);
         });
@@ -274,15 +266,8 @@ class MapBrowser extends Component<OwnProps & DispatchProps> {
     }
 }
 
-function mapDispatchToProps(dispatch: ThunkDispatch<any, void, AnyAction>): DispatchProps {
-    return {
-        actions: {
-            handleFetchCosts: () => dispatch(fetchCosts()),
-            handleFetchSites: () => dispatch(fetchSites()),
-        },
-    };
-}
+const mapStateToProps = (state: BusWatcherState) => ({ costs: state.costs.costs, sites: state.sites.sites })
 
-export default connect(null, mapDispatchToProps)(MapBrowser);
+export default connect(mapStateToProps)(MapBrowser);
 
 

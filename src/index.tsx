@@ -29,3 +29,5 @@ root.render(
         </Provider>
     </BrowserRouter>,
 );
+
+export type BusWatcherState = ReturnType<typeof busWatcherReducer>

@@ -1,7 +1,7 @@
 import { Marker, VectorLayer } from 'maptalks';
 import { SiteMarker } from '../components/MapBrowser';
-import { Site } from '../data/sitesData';
 import { DARK_BLUE, LIGHT_BLUE } from '../common/constants/colors';
+import { Site } from './siteService';
 
 function createMarker(site: Site): Marker {
     return new Marker(

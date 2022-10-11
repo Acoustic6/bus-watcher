@@ -1,8 +1,17 @@
-import { Cost, costs } from '../data/costsData';
+export interface Cost {
+    siteIdFrom: number
+    siteIdTo: number
+    iwait: number
+    inveht: number
+    xwait: number
+    xpen: number
+    xnum: number
+    cost: number
+}
 
 const _costsBySiteFromIdMap: Map<number, Cost[]> = new Map<number, Cost[]>();
 
-export function getCostsBySiteFromIdMap(): Map<number, Cost[]> {
+export function getCostsBySiteFromIdMap(costs: Cost[]): Map<number, Cost[]> {
     if (_costsBySiteFromIdMap.size === 0) {
         costs.forEach(cost => {
             const key = cost.siteIdFrom;

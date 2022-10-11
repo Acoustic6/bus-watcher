@@ -1,23 +1,29 @@
-import getCostsBySiteFromIdMap from './costService';
-import { Site, sites } from '../data/sitesData';
+import getCostsBySiteFromIdMap, { Cost } from './costService';
+
+export interface Site {
+    siteId: number
+    siteName: string
+    longitude: number
+    latitude: number
+}
 
 const _unreachableSitesBySiteFromId: Map<number, Site[]> = new Map<number, Site[]>();
 
-export function getUnreachableSiteToIdsBySiteFromIdMap(): Map<number, Site[]> {
+export function getUnreachableSiteToIdsBySiteFromIdMap(costs: Cost[], sites: Site[]): Map<number, Site[]> {
     if (_unreachableSitesBySiteFromId.size === 0) {
 
-        const sites = getSites();
-        sites.forEach(site => {
-            if (!Array.from(getCostsBySiteFromIdMap().keys()).find(key => key === site.siteId)) {
-                _unreachableSitesBySiteFromId.set(site.siteId, sites.filter(s => s.siteId !== site.siteId));
+        const separatedSites = getSites(sites);
+        separatedSites.forEach(site => {
+            if (!Array.from(getCostsBySiteFromIdMap(costs).keys()).find(key => key === site.siteId)) {
+                _unreachableSitesBySiteFromId.set(site.siteId, separatedSites.filter(s => s.siteId !== site.siteId));
             }
         });
 
-        Array.from(getCostsBySiteFromIdMap().entries()).forEach(entry => {
+        Array.from(getCostsBySiteFromIdMap(costs).entries()).forEach(entry => {
             const [key, costs] = entry;
 
-            if (costs.length < sites.length) {
-                const unreachableSites = sites.filter(site => !costs.map(cost => cost.siteIdTo).includes(site.siteId));
+            if (costs.length < separatedSites.length) {
+                const unreachableSites = separatedSites.filter(site => !costs.map(cost => cost.siteIdTo).includes(site.siteId));
                 _unreachableSitesBySiteFromId.set(key, unreachableSites.filter(site => site.siteId !== key));
             }
         });
@@ -28,7 +34,7 @@ export function getUnreachableSiteToIdsBySiteFromIdMap(): Map<number, Site[]> {
 
 const _separatedSites: Site[] = [];
 
-export function getSites(): Site[] {
+export function getSites(sites: Site[]): Site[] {
     if (_separatedSites.length === 0) {
         const diff = 0.0001;
         const dx = 0.0001;

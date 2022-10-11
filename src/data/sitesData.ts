@@ -1,11 +1,6 @@
-export interface Site {
-    siteId: number
-    siteName: string
-    longitude: number
-    latitude: number
-}
+import { Site } from '../services/siteService';
 
-export const sites: Site[] = [
+export const sitesData: Site[] = [
     { siteId: 1658, siteName: 'Электрический пер.',longitude: 37.577,latitude: 55.773 },
     { siteId: 1659, siteName: 'Б. Кондратьевский пер.',longitude: 37.58,latitude: 55.774 },
     { siteId: 2025, siteName: 'Мебельная ф-ка',longitude: 37.597,latitude: 55.792 },
@@ -71,5 +66,3 @@ export const sites: Site[] = [
     { siteId: 5832, siteName: 'Техническая остановка-2',longitude: 37.62,latitude: 55.765 },
     { siteId: 6159, siteName: 'Нововоротниковский пер.',longitude: 37.605,latitude: 55.779 },
 ];
-
-export default (sites);

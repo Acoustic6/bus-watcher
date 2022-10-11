@@ -1,7 +1,7 @@
-import { Cost } from '../data/costsData';
 import Axios from 'axios';
 import { Dispatch } from 'redux';
 import HttpResponse from '../common/interfaces/httpResponse';
+import { Cost } from '../services/costService';
 
 export type CostState = Readonly<{
     costs: Cost[]
