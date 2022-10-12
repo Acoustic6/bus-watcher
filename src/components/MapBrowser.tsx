@@ -48,11 +48,11 @@ class MapBrowser extends Component<OwnProps & StateProps & DispatchProps> {
         }
     }
 
-    // render() {
-    //     return <React.Fragment>
-    //         <div id="map"></div>
-    //     </React.Fragment>;
-    // }
+    render() {
+        return <React.Fragment>
+            {/* <div id="map"></div> */}
+        </React.Fragment>;
+    }
 
     // initData(): void {
     //     this.costsBySiteFromIdMap = getCostsBySiteFromIdMap(this.props.costs);
