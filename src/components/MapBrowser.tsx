@@ -5,6 +5,9 @@ import { DARK_BLUE, LIGHT_BLUE } from '../common/constants/colors';
 import { Site } from '../services/siteService';
 import { connect } from 'react-redux';
 import { BusWatcherState } from '..';
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
+import { LatLng } from 'leaflet';
+
 
 export type SiteMarker = Site & {
 // marker: Marker
@@ -49,9 +52,21 @@ class MapBrowser extends Component<OwnProps & StateProps & DispatchProps> {
     }
 
     render() {
-        return <React.Fragment>
-            {/* <div id="map"></div> */}
-        </React.Fragment>;
+        const position = new LatLng(55.751244, 37.618423); // TODO: to constants
+
+        return <div>
+            {
+                <MapContainer center={position} zoom={13} scrollWheelZoom={false}>
+                    <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker position={position}>
+                        <Popup>A pretty CSS3 popup. <br /> Easily customizable.</Popup>
+                    </Marker>
+                </MapContainer>
+            }
+        </div>
     }
 
     // initData(): void {
