@@ -17,3 +17,7 @@ body {
 .container {
   max-width: none !important;
 }
+
+input, textarea, select, details, summary, :focus {
+  outline: none;
+}
