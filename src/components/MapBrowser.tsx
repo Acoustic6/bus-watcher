@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { CircleMarker, Tooltip, useMap, useMapEvents } from 'react-leaflet';
+import { CircleMarker, Tooltip, useMapEvents } from 'react-leaflet';
 import { useSelector } from 'react-redux';
 import { RootState } from '..';
 import COLORS from '../common/constants/colors';
@@ -17,7 +17,7 @@ const MapBrowser = () => {
     const [selectedMarker, setSelectedMarker] = useState(null as SiteMarker | null);
     const [markers, setMarkers] = useState([] as SiteMarker[]);
 
-    const map = useMapEvents({
+    useMapEvents({
         click: () => {
             console.log('map');
             makeMarkersDefault(markers);
@@ -35,6 +35,23 @@ const MapBrowser = () => {
         updateMarkers(marker);
     }
 
+    const updateMarker = (marker: SiteMarker) => {
+        markersById.set(marker.siteId, marker);
+    }
+
+    const setCostsByMarker = (marker: SiteMarker) => {
+        const costs = costsById.get(marker.siteId);
+        if (costs) {
+            costs.forEach(cost => {
+                const markerTo = markersById.get(cost.siteIdTo);
+                if (markerTo !== undefined) {
+                    markerTo.cost = cost;
+                    updateMarker(markerTo);
+                }
+            });
+        }
+    }
+
     const updateMarkers = (clickedMarker: SiteMarker) => {
         if (selectedMarker?.siteId === clickedMarker.siteId) {
             return;
@@ -42,24 +59,13 @@ const MapBrowser = () => {
 
         if (selectedMarker) {
             makeMarkerDefault(selectedMarker)
-            markersById.set(selectedMarker.siteId, selectedMarker);
+            updateMarker(selectedMarker);
         }
 
         makeMarkerSelected(clickedMarker);
-        markersById.set(clickedMarker.siteId, clickedMarker);
+        updateMarker(clickedMarker);
         setSelectedMarker(clickedMarker);
-
-
-        const costs = costsById.get(clickedMarker.siteId);
-        if (costs) {
-            costs.forEach(cost => {
-                const markerTo = markersById.get(cost.siteIdTo);
-                if (markerTo !== undefined) {
-                    markerTo.cost = cost;
-                    markersById.set(markerTo.siteId, markerTo);
-                }
-            });
-        }
+        setCostsByMarker(clickedMarker);
         setMarkers(Array.from(markersById.values()));
     }
 
