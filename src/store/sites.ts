@@ -1,5 +1,5 @@
 import Axios from 'axios';
-import { Dispatch } from 'redux';
+import { AppDispatch, RootState } from '..';
 import HttpResponse from '../common/interfaces/httpResponse';
 import { Site } from '../services/siteService';
 
@@ -52,7 +52,7 @@ GetSitesStartAction
 | GetSitesSuccessAction
 | GetSitesErrorAction
 
-export const fetchSites = () => async (dispatch: Dispatch): Promise<void> => {
+export const fetchSites = () => async (dispatch: AppDispatch) => {
     dispatch(getSitesStart());
     try {
         const url = (process.env.REACT_APP_BACK_URL || 'http://localhost:9001') + (process.env.REACT_APP_FETCH_SITES_URL || '');
@@ -88,5 +88,7 @@ const SitesReducer = (state = initialState, action: SitesActionTypes) => {
             return state;
     }
 }
+
+export const sitesSelector = (state: RootState) => state.sites.sites;
 
 export default SitesReducer;

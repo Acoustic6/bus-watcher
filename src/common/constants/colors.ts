@@ -6,3 +6,16 @@ export const GREEN = '#1dc40a';
 export const YELLOW = '#c4bb0a';
 export const RED = '#c4100a';
 export const BLACK = '#010003';
+
+const COLORS = {
+    PURPLE,
+    DARK_PURPLE,
+    LIGHT_BLUE,
+    DARK_BLUE,
+    GREEN,
+    YELLOW,
+    RED,
+    BLACK,
+}
+
+export default COLORS;

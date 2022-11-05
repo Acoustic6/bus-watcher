@@ -1,7 +1,11 @@
 import Axios from 'axios';
 import { Dispatch } from 'redux';
+import { createSelector } from 'reselect';
+import { RootState } from '..';
 import HttpResponse from '../common/interfaces/httpResponse';
 import { Cost } from '../services/costService';
+import { Site } from '../sites';
+import { sitesSelector } from './sites';
 
 export type CostState = Readonly<{
     costs: Cost[]
@@ -89,4 +93,51 @@ const CostsReducer = (state = initialState, action: CostsActionTypes) => {
     }
 }
 
+export const costsSelector = (state: RootState) => state.costs.costs; // may be state?
+
+export const getCostsBySiteFromId = createSelector(
+    [costsSelector],
+    (costs: Cost[]): Map<number, Cost[]> => {
+        const _costsBySiteFromIdMap = new Map<number, Cost[]>();
+        costs.forEach(cost => {
+            const key = cost.siteIdFrom;
+            if (!_costsBySiteFromIdMap.has(key)) {
+                _costsBySiteFromIdMap.set(key, [cost]);
+            } else {
+                const currentValue = _costsBySiteFromIdMap.get(key) as Cost[];
+                _costsBySiteFromIdMap.set(key, [cost, ...currentValue]);
+            }
+        });
+
+        return _costsBySiteFromIdMap;
+    },
+)
+
+export const getUnreachableSitesByIdFrom = createSelector(
+    [sitesSelector, getCostsBySiteFromId],
+    (sites: Site[], costsBySiteFromId: Map<number, Cost[]>): Map<number, Site[]> => {
+        console.time('getUnreachableSitesByIdFrom');
+        const unreachableSitesBySiteFromId = new Map<number, Site[]>();
+
+        sites.forEach(site => {
+            if (!Array.from(costsBySiteFromId.keys()).find(key => key === site.siteId)) {
+                unreachableSitesBySiteFromId.set(site.siteId, sites.filter(s => s.siteId !== site.siteId));
+            }
+        });
+
+        Array.from(costsBySiteFromId.entries()).forEach(entry => {
+            const [key, costs] = entry;
+
+            if (costs.length < sites.length) {
+                const unreachableSites = sites.filter(site => !costs.map(cost => cost.siteIdTo).includes(site.siteId));
+                unreachableSitesBySiteFromId.set(key, unreachableSites.filter(site => site.siteId !== key));
+            }
+        });
+
+        console.timeEnd('getUnreachableSitesByIdFrom');
+        return unreachableSitesBySiteFromId;
+    },
+)
+
 export default CostsReducer;
+

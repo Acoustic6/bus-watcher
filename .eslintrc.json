@@ -264,8 +264,12 @@
         "allowObject": false
       }
     ],
-    "@typescript-eslint/no-unsafe-argument": "off"
+    "@typescript-eslint/no-unsafe-argument": "off",
+    "@typescript-eslint/no-misused-promises": "warn",
+    "sonarjs/no-unused-collection": "off",
+    "@typescript-eslint/no-floating-promises": "off",
+    "no-debugger": "off"
     //    "no-use-before-define": "off",
-    //    "@typescript-eslint/no-use-before-define": "off"
+      //  "@typescript-eslint/no-use-before-define": "off"
   }
 }

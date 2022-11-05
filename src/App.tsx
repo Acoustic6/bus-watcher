@@ -1,38 +1,37 @@
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { AnyAction } from 'redux';
-import { ThunkDispatch } from 'redux-thunk';
-import { BusWatcherState } from '.';
+import { MapContainer, TileLayer } from 'react-leaflet';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '.';
 import MapBrowser from './components/MapBrowser';
-import NavBar from './components/navBar';
 import { fetchCosts } from './store/costs';
 import { fetchSites } from './store/sites';
 
-const App = (props: DispatchProps) => {
+const App = () => {
+    const dispatch = useDispatch<AppDispatch>();
+
     useEffect(() => {
-        props.actions.handleFetchCosts();
-        props.actions.handleFetchSites();
-    });
+        dispatch(fetchCosts());
+        dispatch(fetchSites());
+    }, []);
+
+    const position = { lat: 55.77193853272883, lng: 37.60620117187501 }; // TODO: to constants
 
     return <React.Fragment>
-        <NavBar />
-        <main className="container">
-            <MapBrowser actions={props.actions}/>
+        <main className="container" style={{ padding: '0 !important' }}>
+            <div style={{ height: '100%', width: '100%' }}>
+                {
+                    <MapContainer style={{ height: '100%', width: '100%' }} center={position} zoom={12} scrollWheelZoom={true}>
+                        <TileLayer
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                        <MapBrowser />
+                    </MapContainer>
+
+                }
+            </div>
         </main>
     </React.Fragment>
 }
-interface DispatchProps {
-    actions: {
-        handleFetchCosts: () => void
-        handleFetchSites: () => void
-    }
-}
 
-const mapDispatchToProps = (dispatch: ThunkDispatch<BusWatcherState, void, AnyAction>): DispatchProps => ({
-    actions: {
-        handleFetchCosts: () => dispatch(fetchCosts()),
-        handleFetchSites: () => dispatch(fetchSites()),
-    },
-})
-
-export default connect(null, mapDispatchToProps)(App);
+export default App;
