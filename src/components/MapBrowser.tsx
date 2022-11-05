@@ -4,9 +4,8 @@ import { CircleMarker, Tooltip, useMapEvents } from 'react-leaflet';
 import { useSelector } from 'react-redux';
 import { RootState } from '..';
 import COLORS from '../common/constants/colors';
-import { getColor } from '../costs';
+import { getColor, getCostsBySiteFromId, getUnreachableSitesByIdFrom } from '../costs';
 import { getSeparatedSiteMarkers, getSiteMarkersById, makeMarkerDefault, makeMarkersDefault, makeMarkerSelected, setMarkerColor, SiteMarker } from '../markers';
-import { getCostsBySiteFromId, getUnreachableSitesByIdFrom } from '../store/costs';
 
 const MapBrowser = () => {
     const siteMarkers = useSelector((state: RootState) => getSeparatedSiteMarkers(state));
