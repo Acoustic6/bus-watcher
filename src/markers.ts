@@ -1,8 +1,7 @@
 import { createSelector } from 'reselect';
 import COLORS from './common/constants/colors';
-import { Cost, getColor } from './costs';
-import { Site } from './sites';
-import { sitesSelector } from './store/sites';
+import { Cost } from './costs';
+import { Site, sitesSelector } from './sites';
 
 export type SiteMarker = Site & {
     color: string

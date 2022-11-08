@@ -1,4 +1,4 @@
-import { Cost } from '../services/costService';
+import { Cost } from '../costs';
 
 export const costsData: Cost[] = [
     { siteIdFrom: 1658,siteIdTo: 2363,iwait: 0.83,inveht: 8.78,xwait: 1.52,xpen: 5.0,xnum: 1.0,cost: 16.13 },

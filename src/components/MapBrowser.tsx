@@ -18,7 +18,6 @@ const MapBrowser = () => {
 
     useMapEvents({
         click: () => {
-            console.log('map');
             makeMarkersDefault(markers);
             setSelectedMarker(null);
             setMarkers(markers);
@@ -132,5 +131,3 @@ const MapBrowser = () => {
 }
 
 export default MapBrowser;
-
-

@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import { combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import CostsReducer from './costs';
-import SitesReducer from './store/sites';
+import SitesReducer from './sites';
 import { createRoot } from 'react-dom/client';
 import 'leaflet/dist/leaflet.css';
 import { configureStore } from '@reduxjs/toolkit';

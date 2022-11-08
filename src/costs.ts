@@ -5,8 +5,7 @@ import { Dispatch } from 'redux';
 import HttpResponse from './common/interfaces/httpResponse';
 import { RootState } from '.';
 import { createSelector } from 'reselect';
-import { sitesSelector } from './store/sites';
-import { Site } from './sites';
+import { Site, sitesSelector } from './sites';
 
 export interface Cost {
     siteIdFrom: number

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '.';
 import MapBrowser from './components/MapBrowser';
 import { fetchCosts } from './costs';
-import { fetchSites } from './store/sites';
+import { fetchSites } from './sites';
 
 const App = () => {
     const dispatch = useDispatch<AppDispatch>();
